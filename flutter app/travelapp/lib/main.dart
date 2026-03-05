@@ -5,6 +5,7 @@ import 'screens/auth/login_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/search/search_screen.dart';
+import 'screens/objectives/objectives_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -105,6 +106,6 @@ class _OnboardingGateState extends State<OnboardingGate> {
     if (_showOnboarding) {
       return const OnboardingScreen();
     }
-    return const HomeScreen();
+    return const ObjectivesScreen();
   }
 }
