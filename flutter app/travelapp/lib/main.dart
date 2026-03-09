@@ -6,6 +6,9 @@ import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/search/search_screen.dart';
 import 'screens/objectives/objectives_screen.dart';
+import 'screens/activity/activity_screen.dart';
+import 'screens/profile/profile_screen.dart';
+import 'widgets/app_layout.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -106,6 +109,24 @@ class _OnboardingGateState extends State<OnboardingGate> {
     if (_showOnboarding) {
       return const OnboardingScreen();
     }
-    return const ObjectivesScreen();
+    return const MainShell();
+  }
+}
+
+class MainShell extends StatelessWidget {
+  const MainShell({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppLayout(
+      notificationCount: 3,
+      pages: const [
+        AppPage(title: 'Home', body: HomeScreen()),
+        AppPage(title: 'Search', body: SearchScreen()),
+        AppPage(title: 'Map', body: ObjectivesScreen()),
+        AppPage(title: 'Activity', body: ActivityScreen()),
+        AppPage(title: 'Profile', body: ProfileScreen()),
+      ],
+    );
   }
 }
