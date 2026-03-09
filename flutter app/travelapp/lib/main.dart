@@ -5,8 +5,8 @@ import 'screens/auth/login_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/search/search_screen.dart';
-import 'screens/objectives/objectives_screen.dart';
-import 'screens/activity/activity_screen.dart';
+import 'screens/bucket_list/bucket_list_screen.dart';
+import 'screens/chat/chat_screen.dart';
 import 'screens/profile/profile_screen.dart';
 import 'widgets/app_layout.dart';
 
@@ -119,12 +119,19 @@ class MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppLayout(
-      notificationCount: 3,
+      // Gamification — wire to global state later
+      level: 12,
+      xpProgress: 0.65,
+      coins: 450,
+      showChatBadge: true,
+      onProfileTap: () {
+        // Navigate to Profile tab (index 4)
+      },
       pages: const [
         AppPage(title: 'Home', body: HomeScreen()),
         AppPage(title: 'Search', body: SearchScreen()),
-        AppPage(title: 'Map', body: ObjectivesScreen()),
-        AppPage(title: 'Activity', body: ActivityScreen()),
+        AppPage(title: 'Bucket List', body: BucketListScreen()),
+        AppPage(title: 'Chat', body: ChatScreen()),
         AppPage(title: 'Profile', body: ProfileScreen()),
       ],
     );

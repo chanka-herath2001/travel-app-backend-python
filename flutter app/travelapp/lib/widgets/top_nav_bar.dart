@@ -2,23 +2,22 @@ import 'package:flutter/material.dart';
 import '../utils/contants.dart';
 
 class TopNavBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-  final int notificationCount;
+  /// Gamification props — connect to global state later.
+  final int level;
+  final double xpProgress; // 0.0 – 1.0
+  final int coins;
+
+  /// Identity
   final String? avatarUrl;
-  final VoidCallback? onNotificationTap;
   final VoidCallback? onProfileTap;
-  final Widget? logo;
-  final List<Widget>? extraActions;
 
   const TopNavBar({
     super.key,
-    required this.title,
-    this.notificationCount = 0,
+    this.level = 1,
+    this.xpProgress = 0,
+    this.coins = 0,
     this.avatarUrl,
-    this.onNotificationTap,
     this.onProfileTap,
-    this.logo,
-    this.extraActions,
   });
 
   @override
@@ -27,81 +26,156 @@ class TopNavBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width >= 768;
+    final hPad = isWide ? 24.0 : 14.0;
 
-    return AppBar(
-      backgroundColor: AppColors.bg,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      leadingWidth: isWide ? 180 : 56,
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 12),
-        child: logo ??
-            Row(
-              mainAxisSize: MainAxisSize.min,
+    return Container(
+      color: AppColors.bg,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: hPad),
+          child: SizedBox(
+            height: kToolbarHeight,
+            child: Row(
               children: [
-                Icon(Icons.travel_explore, color: AppColors.accent, size: 28),
-                if (isWide) ...[
-                  const SizedBox(width: 8),
-                  Text(
-                    'MY Map',
-                    style: TextStyle(
-                      color: AppColors.accent,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
+                // ── Left: Gamification cluster ──
+                _LevelBadge(level: level),
+                const SizedBox(width: 10),
+                _XpBar(progress: xpProgress, width: isWide ? 100 : 64),
+
+                const Spacer(),
+
+                // ── Right: Currency & Identity ──
+                _CoinDisplay(coins: coins),
+                SizedBox(width: isWide ? 16 : 10),
+                _ProfileAvatar(
+                  avatarUrl: avatarUrl,
+                  onTap: onProfileTap,
+                ),
               ],
             ),
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(
-          color: AppColors.white,
-          fontWeight: FontWeight.w600,
-          fontSize: 18,
+          ),
         ),
       ),
-      centerTitle: true,
-      actions: [
-        if (extraActions != null) ...extraActions!,
-        _NotificationBell(
-          count: notificationCount,
-          onTap: onNotificationTap,
+    );
+  }
+}
+
+// ─── Level Badge ────────────────────────────────────────
+
+class _LevelBadge extends StatelessWidget {
+  final int level;
+  const _LevelBadge({required this.level});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.accent.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.shield, color: AppColors.accent, size: 16),
+          const SizedBox(width: 4),
+          Text(
+            'Lvl $level',
+            style: const TextStyle(
+              color: AppColors.accent,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── XP Progress Bar ────────────────────────────────────
+
+class _XpBar extends StatelessWidget {
+  final double progress; // 0.0 – 1.0
+  final double width;
+  const _XpBar({required this.progress, required this.width});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'XP',
+          style: TextStyle(
+            color: AppColors.white.withValues(alpha: 0.45),
+            fontSize: 9,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        const SizedBox(width: 4),
-        _ProfileAvatar(
-          avatarUrl: avatarUrl,
-          onTap: onProfileTap,
+        const SizedBox(height: 2),
+        Container(
+          width: width,
+          height: 6,
+          decoration: BoxDecoration(
+            color: AppColors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(3),
+          ),
+          child: FractionallySizedBox(
+            alignment: Alignment.centerLeft,
+            widthFactor: progress.clamp(0.0, 1.0),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.accent, Color(0xFF8AE234)],
+                ),
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+          ),
         ),
-        const SizedBox(width: 12),
       ],
     );
   }
 }
 
-class _NotificationBell extends StatelessWidget {
-  final int count;
-  final VoidCallback? onTap;
+// ─── Coin Display ───────────────────────────────────────
 
-  const _NotificationBell({required this.count, this.onTap});
+class _CoinDisplay extends StatelessWidget {
+  final int coins;
+  const _CoinDisplay({required this.coins});
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: onTap,
-      icon: Badge(
-        isLabelVisible: count > 0,
-        label: Text(
-          count > 99 ? '99+' : count.toString(),
-          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.red,
-        child: const Icon(Icons.notifications_outlined, color: AppColors.white),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.monetization_on, color: Color(0xFFFFD700), size: 18),
+          const SizedBox(width: 5),
+          Text(
+            coins >= 1000 ? '${(coins / 1000).toStringAsFixed(1)}k' : '$coins',
+            style: const TextStyle(
+              color: AppColors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+
+// ─── Profile Avatar ─────────────────────────────────────
 
 class _ProfileAvatar extends StatelessWidget {
   final String? avatarUrl;
@@ -113,14 +187,20 @@ class _ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: CircleAvatar(
-        radius: 16,
-        backgroundColor: AppColors.card,
-        backgroundImage:
-            avatarUrl != null ? NetworkImage(avatarUrl!) : null,
-        child: avatarUrl == null
-            ? const Icon(Icons.person, color: AppColors.white, size: 20)
-            : null,
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.accent, width: 2),
+        ),
+        child: CircleAvatar(
+          radius: 16,
+          backgroundColor: AppColors.card,
+          backgroundImage:
+              avatarUrl != null ? NetworkImage(avatarUrl!) : null,
+          child: avatarUrl == null
+              ? const Icon(Icons.person, color: AppColors.white, size: 18)
+              : null,
+        ),
       ),
     );
   }

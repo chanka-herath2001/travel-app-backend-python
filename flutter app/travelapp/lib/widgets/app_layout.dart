@@ -14,8 +14,7 @@ class AppPage {
 /// and an [AppBottomNavBar].
 ///
 /// - On narrow screens (< 768 dp) the bottom nav bar is shown.
-/// - On wider screens the bottom nav is hidden (navigation can live
-///   in the top bar or a side rail — extend as needed).
+/// - On wider screens the bottom nav is hidden.
 class AppLayout extends StatefulWidget {
   /// Ordered list of pages that map 1-to-1 with bottom nav items.
   final List<AppPage> pages;
@@ -26,29 +25,31 @@ class AppLayout extends StatefulWidget {
   /// Override nav item configs (icons / labels).
   final List<NavItemConfig> navItems;
 
-  /// Notification badge count shown on the top bar.
-  final int notificationCount;
+  // ── Top-bar gamification props ──
+  final int level;
+  final double xpProgress;
+  final int coins;
 
   /// User avatar URL for the top bar.
   final String? avatarUrl;
 
-  /// Top-bar callbacks.
-  final VoidCallback? onNotificationTap;
+  /// Profile avatar tap callback (navigates to profile).
   final VoidCallback? onProfileTap;
 
-  /// Optional logo widget for the top bar.
-  final Widget? logo;
+  /// Show a notification dot on the Chat bottom-nav item.
+  final bool showChatBadge;
 
   const AppLayout({
     super.key,
     required this.pages,
     this.initialIndex = 0,
     this.navItems = defaultNavItems,
-    this.notificationCount = 0,
+    this.level = 1,
+    this.xpProgress = 0,
+    this.coins = 0,
     this.avatarUrl,
-    this.onNotificationTap,
     this.onProfileTap,
-    this.logo,
+    this.showChatBadge = false,
   });
 
   @override
@@ -67,16 +68,14 @@ class _AppLayoutState extends State<AppLayout> {
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 768;
-    final page = widget.pages[_currentIndex];
 
     return Scaffold(
       appBar: TopNavBar(
-        title: page.title,
-        notificationCount: widget.notificationCount,
+        level: widget.level,
+        xpProgress: widget.xpProgress,
+        coins: widget.coins,
         avatarUrl: widget.avatarUrl,
-        onNotificationTap: widget.onNotificationTap,
         onProfileTap: widget.onProfileTap,
-        logo: widget.logo,
       ),
       body: IndexedStack(
         index: _currentIndex,
@@ -86,6 +85,7 @@ class _AppLayoutState extends State<AppLayout> {
           ? AppBottomNavBar(
               currentIndex: _currentIndex,
               items: widget.navItems,
+              showChatBadge: widget.showChatBadge,
               onTap: (index) => setState(() => _currentIndex = index),
             )
           : null,
