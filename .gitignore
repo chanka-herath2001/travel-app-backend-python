@@ -1,56 +1,49 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub/
 build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+pubspec.lock
 
-# Virtual Environment
-venv/
-ENV/
-env/
-.venv/
+# Android
+android/.gradle/
+android/app/build/
+android/local.properties
+*.keystore
+*.jks
 
-# Environment variables - IMPORTANT!
-.env
-.env.local
-.env.*.local
+# iOS (safe to keep even if not used)
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Pods/
+ios/.symlinks/
+ios/Runner.xcworkspace/
+ios/Runner.xcodeproj/project.xcworkspace/
+ios/Runner.xcodeproj/xcuserdata/
+
+# Web
+build/web/
+
+# macOS
+macos/Flutter/ephemeral/
+
+# Linux
+linux/flutter/ephemeral/
+
+# Windows
+windows/flutter/ephemeral/
 
 # IDE
-.vscode/
 .idea/
-*.swp
-*.swo
-*~
-.DS_Store
+.vscode/
+*.iml
+
+# Logs
+*.log
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Logs
-*.log
-logs/
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
